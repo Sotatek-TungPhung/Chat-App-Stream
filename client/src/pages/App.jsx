@@ -26,6 +26,8 @@ if(authToken) {
     }, authToken)
 }
 
+// console.log({authToken});
+// console.log({client});
 
 const App = () => {
     const [createType, setCreateType] = useState('');

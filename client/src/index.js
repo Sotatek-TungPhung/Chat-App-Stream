@@ -7,6 +7,7 @@ import {
   } from "react-router-dom";
 import App from './pages/App';
 import FeedActivity from './pages/FeedActivity'
+import './index.css';
 
 ReactDOM.render(
     <BrowserRouter>
