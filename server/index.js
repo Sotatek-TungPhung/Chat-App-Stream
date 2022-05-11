@@ -1,7 +1,14 @@
 const express = require("express");
 const cors = require("cors");
+const { StreamChat } = require('stream-chat');
+const localtunnel = require('localtunnel');
 
 const authRoutes = require("./routes/auth.js");
+
+const api_key = process.env.STREAM_API_KEY;
+const api_secret = process.env.STREAM_API_SECRET;
+
+const chatClient = new StreamChat(api_key, api_secret);
 
 const app = express();
 const PORT = process.env.PORT || 8000;
@@ -12,13 +19,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
 
+app.use("/auth", authRoutes);
+
 app.post("/", (req, res) => {
-    const { user, message, form_data } = req.body;
+    const { message, form_data } = req.body;
     const isAppointment = message.command === "appointment";
 
     if (isAppointment && !form_data) {
-        message.text = ""; 
-        message.type = "ephemeral"; 
+        message.text = "";
+        message.type = "ephemeral";
         message.mml = `
             <mml type="card">
                 <input name="phone" label="Please Enter your phone number" placeholder="e.g. 999-999-9999"></input>
@@ -43,18 +52,12 @@ app.post("/", (req, res) => {
         form_data.action === "reserve" &&
         form_data.appointment
     ) {
-        storeInDb({
-            phone: message.phone,
-            user: user.id,
-            date: form_data.appointment,
-        }); 
-
-        message.type = "regular"; 
-        message.phone = undefined; 
+        message.type = "regular";
+        message.phone = undefined;
         const title = `Appointment ${message.args}`.trim();
         const end = new Date(
             Date.parse(form_data.appointment) + 30 * 60000
-        ).toISOString(); 
+        ).toISOString();
         message.mml = `
             <mml>
                 <add_to_calendar
@@ -71,13 +74,29 @@ app.post("/", (req, res) => {
         message.text = "invalid command or input";
     }
 
-    return res.status(200).json({ ...req.body, message }); // reply to Stream with updated message object which updates the message for user
+    return res.status(200).json({ ...req.body, message });
 });
+const setupTunnelAndWebhook = async () => {
+    const { url } = await localtunnel({ port: PORT });
+    const cmds = await chatClient.listCommands();
+    if (!cmds.commands.find(({ name }) => name === 'appointment')) {
+        await chatClient.createCommand({
+            name: 'appointment',
+            description: 'Create an appointment',
+            args: '[description]',
+            set: 'mml_commands_set',
+        });
+    }
+    const type = await chatClient.getChannelType('messaging');
+    if (!type.commands.find(({ name }) => name === 'appointment')) {
+        await chatClient.updateChannelType('messaging', { commands: ['all', 'appointment'] });
+    }
+    await chatClient.updateAppSettings({ custom_action_handler_url: url });
+};
 
-app.get("/", (req, res) => {
-    res.send("Hello, World!");
+app.listen(PORT, (err) => {
+    if (err) throw err;
+    console.log(`Server running in http://127.0.0.1:${PORT}`);
+
+    setupTunnelAndWebhook();
 });
-
-app.use("/auth", authRoutes);
-
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
