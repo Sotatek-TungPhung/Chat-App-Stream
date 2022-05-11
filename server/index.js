@@ -77,7 +77,12 @@ app.post("/", (req, res) => {
     return res.status(200).json({ ...req.body, message });
 });
 const setupTunnelAndWebhook = async () => {
+
+    
     const { url } = await localtunnel({ port: PORT });
+    await chatClient.updateAppSettings({ custom_action_handler_url: url });
+
+
     const cmds = await chatClient.listCommands();
     if (!cmds.commands.find(({ name }) => name === 'appointment')) {
         await chatClient.createCommand({
@@ -91,7 +96,6 @@ const setupTunnelAndWebhook = async () => {
     if (!type.commands.find(({ name }) => name === 'appointment')) {
         await chatClient.updateChannelType('messaging', { commands: ['all', 'appointment'] });
     }
-    await chatClient.updateAppSettings({ custom_action_handler_url: url });
 };
 
 app.listen(PORT, (err) => {
