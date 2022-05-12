@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Channel ,  Attachment, useMessageContext, MessageTeam} from 'stream-chat-react';
 import { MML } from 'mml-react';
 
@@ -28,18 +28,26 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
         </div>
     )
 
-    const test = (data, action = 'log') => {
-        switch(action) {
-            case 'log':
-                console.log('case log:', data);
-                break;
-            case 'edit':
-                console.log('case edit');
-                break;
-            default:
-                console.log('default');
-        }
-    }
+    // const test = ( action = 'log') => {
+    //     switch(action) {
+    //         case 'log':
+    //             setMmlSource(`<mml type="card">
+    //             <scheduler 
+    //               name="appointment" 
+    //               duration="30" 
+    //               timeInterval="15"
+    //               selected="2020-11-16T10:30:00.000Z"
+    //             />
+    //             <button name="action" value="reserve">Reserve</button>
+    //           </mml>`);
+    //             break;
+    //         case 'edit':
+    //             console.log('case edit');
+    //             break;
+    //         default:
+    //             console.log('default');
+    //     }
+    // }
 
     const CustomMessage = (a, i) => {
         const { message } = useMessageContext();
@@ -47,9 +55,29 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
         if (!message.attachments.length) {
             return <MessageTeam key={i} {...message} />
         }
+        let mmlSource = ''
+        switch(message.attachments[0].action) {
+            case 'log':
+                mmlSource = `<mml type="card">
+                <scheduler 
+                  name="appointment" 
+                  duration="30" 
+                  timeInterval="15"
+                  selected="2020-11-16T10:30:00.000Z"
+                />
+                <button name="action" value="reserve">Reserve</button>
+              </mml>`;
+                break;
+            case 'edit':
+                console.log('case edit');
+                break;
+            default:
+                console.log('default');
+        }
+
         return (
           <div>
-            {message?.attachments[0]?.type === 'mml' && <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} />}
+            {message?.attachments[0]?.type === 'mml' && <MML source={mmlSource} />}
             {message.attachments && <Attachment attachments={message.attachments} />}
           </div>
         );

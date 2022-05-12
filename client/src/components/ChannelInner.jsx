@@ -29,16 +29,7 @@ const ChannelInner = ({ setIsEditing }) => {
   };
   
   const Click = async()=>{
-    const mmlSource = `<mml type="card">
-    <scheduler 
-      name="appointment" 
-      duration="30" 
-      timeInterval="15"
-      selected="2020-11-16T10:30:00.000Z"
-    />
-    <button name="action" value="reserve">Reserve</button>
-  </mml>`;
-    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log'}]};
+    const message = {attachments: [{type: 'mml', action: 'log'}]};
     sendMessage(message);
   }
 
@@ -65,7 +56,7 @@ const TeamChannelHeader = ({ setIsEditing }) => {
       const members = Object.values(channel.state.members).filter(({ user }) => user.id !== client.userID);
       const additionalMembers = members.length - 3;
   
-      if(channel.type === 'messaging') {
+    if (channel.type === 'messaging') {
         return (
           <div className='team-channel-header__name-wrapper'>
             {members.map(({ user }, i) => (
