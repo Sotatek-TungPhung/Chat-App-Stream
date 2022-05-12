@@ -1,5 +1,5 @@
 import React from 'react';
-import { Channel ,  Attachment, useMessageContext} from 'stream-chat-react';
+import { Channel ,  Attachment, useMessageContext, MessageTeam} from 'stream-chat-react';
 import { MML } from 'mml-react';
 
 import { ChannelInner, CreateChannel, EditChannel } from './';
@@ -28,12 +28,28 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
         </div>
     )
 
-    const CustomMessage = () => {
+    const test = (data, action = 'log') => {
+        switch(action) {
+            case 'log':
+                console.log('case log:', data);
+                break;
+            case 'edit':
+                console.log('case edit');
+                break;
+            default:
+                console.log('default');
+        }
+    }
+
+    const CustomMessage = (a, i) => {
         const { message } = useMessageContext();
-        console.log(JSON.parse(JSON.stringify(message)));
+        console.log(message);
+        if (!message.attachments.length) {
+            return <MessageTeam key={i} {...message} />
+        }
         return (
           <div>
-              { message?.attachments[0]?.type === 'mml' && <MML source={message.attachments[0].mml} />}
+            {message?.attachments[0]?.type === 'mml' && <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} />}
             {message.attachments && <Attachment attachments={message.attachments} />}
           </div>
         );

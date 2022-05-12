@@ -27,12 +27,19 @@ const ChannelInner = ({ setIsEditing }) => {
       setGiphyState(false);
     }
   };
-
+  
   const Click = async()=>{
-    const mmlSource = '<mml><button name="action" value="Activate">Activate Card</button></mml>';
-    const message = {attachments: [{type: 'mml', mml: mmlSource}]};
-    const response = sendMessage(message);
-    console.log({response});
+    const mmlSource = `<mml type="card">
+    <scheduler 
+      name="appointment" 
+      duration="30" 
+      timeInterval="15"
+      selected="2020-11-16T10:30:00.000Z"
+    />
+    <button name="action" value="reserve">Reserve</button>
+  </mml>`;
+    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log'}]};
+    sendMessage(message);
   }
 
   return (
