@@ -10,7 +10,7 @@ const ChannelInner = ({ setIsEditing }) => {
   const { sendMessage } = useChannelActionContext();
   
   const overrideSubmitHandler = (message) => {
-    let updatedMessage = {
+    let updatedMessage = {    
       attachments: message.attachments,
       mentioned_users: message.mentioned_users,
       parent_id: message.parent?.id,
@@ -28,12 +28,20 @@ const ChannelInner = ({ setIsEditing }) => {
     }
   };
 
+  const Click = async()=>{
+    const mmlSource = '<mml><button name="action" value="Activate">Activate Card</button></mml>';
+    const message = {attachments: [{type: 'mml', mml: mmlSource}]};
+    const response = sendMessage(message);
+    console.log({response});
+  }
+
   return (
     <GiphyContext.Provider value={{ giphyState, setGiphyState }}>
       <div style={{ display: 'flex', width: '100%' }}>
         <Window>
           <TeamChannelHeader setIsEditing={setIsEditing} />
           <MessageList />
+          <button onClick={Click}>MML</button>
           <MessageInput overrideSubmitHandler={overrideSubmitHandler} />
         </Window>
         <Thread />

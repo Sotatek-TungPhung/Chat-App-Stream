@@ -40,9 +40,9 @@ app.post("/", (req, res) => {
         message.phone = form_data.phone; // store temporary data in the message object
         message.mml = `
             <mml type="card">
-            <text>Please choose a time slot:</text>
-            <scheduler name="appointment" duration="30" interval="30" selected="2021-03-15T10:30:00.000Z" />
-            <button name="action" value="reserve" icon="add_alarm">${buttonText}</button>
+                <text>Please choose a time slot:</text>
+                <scheduler name="appointment" duration="30" interval="30" selected="2021-03-15T10:30:00.000Z" />
+                <button name="action" value="reserve" icon="add_alarm">${buttonText}</button>
             </mml>
     `;
     }
@@ -78,7 +78,7 @@ app.post("/", (req, res) => {
 });
 const setupTunnelAndWebhook = async () => {
 
-    
+
     const { url } = await localtunnel({ port: PORT });
     await chatClient.updateAppSettings({ custom_action_handler_url: url });
 
