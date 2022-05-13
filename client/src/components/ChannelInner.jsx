@@ -15,11 +15,11 @@ const ChannelInner = ({ setIsEditing }) => {
       mentioned_users: message.mentioned_users,
       parent_id: message.parent?.id,
       parent: message.parent,
-      text: message.text,
+      text: message.text
     };
     
     if (giphyState) {
-      updatedMessage = { ...updatedMessage, text: `/giphy ${message.text}` };
+      updatedMessage = { ...updatedMessage, text: `/giphy ${message.text}`};
     }
     
     if (sendMessage) {
@@ -38,7 +38,7 @@ const ChannelInner = ({ setIsEditing }) => {
     />
     <button name="action" value="reserve">Reserve</button>
   </mml>`;
-    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log'}]};
+    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log', show: 'ephemeral'}]};
     sendMessage(message);
   }
 

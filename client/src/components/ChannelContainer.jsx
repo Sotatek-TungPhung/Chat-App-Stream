@@ -1,9 +1,9 @@
 import React from 'react';
 import { Channel ,  Attachment, useMessageContext, MessageTeam} from 'stream-chat-react';
 import { MML } from 'mml-react';
-
+import Cookies from 'universal-cookie';
 import { ChannelInner, CreateChannel, EditChannel } from './';
-
+const cookies = new Cookies();
 const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, createType }) => {
     if(isCreating) {
         return (
@@ -41,6 +41,16 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
         }
     }
 
+    const renderMMl = (message) => {
+       if (message.attachments && message?.attachments[0]?.type !== 'mml') return <Attachment attachments={message.attachments} />
+       if (message?.attachments[0]?.show && message?.attachments[0]?.show === 'ephemeral') {
+           const userId = cookies.get('userId');
+           if (userId === message.user.id) return <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} /> 
+           return;
+       };
+       return <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} />
+    }
+
     const CustomMessage = (a, i) => {
         const { message } = useMessageContext();
         console.log(message);
@@ -49,8 +59,7 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
         }
         return (
           <div>
-            {message?.attachments[0]?.type === 'mml' && <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} />}
-            {message.attachments && <Attachment attachments={message.attachments} />}
+            {renderMMl(message)}
           </div>
         );
       };
