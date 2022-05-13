@@ -3,6 +3,7 @@ import { Channel ,  Attachment, useMessageContext, MessageTeam} from 'stream-cha
 import { MML } from 'mml-react';
 import Cookies from 'universal-cookie';
 import { ChannelInner, CreateChannel, EditChannel } from './';
+import MyCustomButton from './MyCustomButton';
 const cookies = new Cookies();
 const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, createType }) => {
     if(isCreating) {
@@ -40,7 +41,11 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
                 console.log('default');
         }
     }
-
+    const converters = {
+        button: (tag, children) => {
+          return <MyCustomButton {...tag.node.attributes} text={tag.getText()} key={tag.key} />;
+        },
+      };
     const renderMMl = (message) => {
        if (message.attachments && message?.attachments[0]?.type !== 'mml') return <Attachment attachments={message.attachments} />
        if (message?.attachments[0]?.show && message?.attachments[0]?.show === 'ephemeral') {
@@ -48,7 +53,7 @@ const ChannelContainer = ({ isCreating, setIsCreating, isEditing, setIsEditing, 
            if (userId === message.user.id) return <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} /> 
            return;
        };
-       return <MML onSubmit={(data) => test(data, message.attachments[0].action)} source={message.attachments[0].mml} />
+       return <MML onSubmit={(data) => test(data, message.attachments[0].action)} converters={converters} source={message.attachments[0].mml} />
     }
 
     const CustomMessage = (a, i) => {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { MessageList, MessageInput, Thread, Window, useChannelActionContext, Avatar, useChannelStateContext, useChatContext } from 'stream-chat-react';
 
 import { ChannelInfo } from '../assets';
+import MyCustomButton from './MyCustomButton';
 
 export const GiphyContext = React.createContext({});
 
@@ -30,15 +31,10 @@ const ChannelInner = ({ setIsEditing }) => {
   
   const Click = async()=>{
     const mmlSource = `<mml type="card">
-    <scheduler 
-      name="appointment" 
-      duration="30" 
-      timeInterval="15"
-      selected="2020-11-16T10:30:00.000Z"
-    />
-    <button name="action" value="reserve">Reserve</button>
+    <input type="text" name="test" />
+    <button name="action" value="submit">Reserve</button>
   </mml>`;
-    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log', show: 'ephemeral'}]};
+    const message = {attachments: [{type: 'mml', mml: mmlSource, action: 'log'}]};
     sendMessage(message);
   }
 
