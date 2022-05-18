@@ -1,6 +1,8 @@
 :root {
     --primary-color: #005fff;
     --primary-color-alpha: #005fff1a;
+    --test-1: 'test1';
+    --test-2: 'test2';
   }
   
   html,
